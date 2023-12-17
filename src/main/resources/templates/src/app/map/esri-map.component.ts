@@ -28,6 +28,7 @@ import esri = __esri; // Esri TypeScript Types
 import Config from '@arcgis/core/config';
 import WebMap from '@arcgis/core/WebMap';
 import MapView from '@arcgis/core/views/MapView';
+import Search from '@arcgis/core/widgets/Search';
 import * as Locator from '@arcgis/core/rest/locator';
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 
@@ -55,6 +56,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   // Instances
   map!: esri.Map;
   view!: esri.MapView;
+  search!: esri.Search
   pointGraphic!: esri.Graphic;
   graphicsLayer!: esri.GraphicsLayer;
 
@@ -95,6 +97,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
       this.view = new MapView(mapViewProperties);
       let obj = this;
+      const search = new Search({
+        view: this.view
+      });
+
       // Fires `pointer-move` event when user clicks on "Shift"
       // key and moves the pointer on the view.
       this.view.on('pointer-move', ["Shift"], (event) => {
@@ -103,6 +109,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       });
 
       await this.view.when(); // wait for map to load
+      this.view.when(() => {
+        this.view.ui.add(search, 'top-right');
+      });
       console.log("ArcGIS map loaded");
       this.addRouter();
       console.log(this.view.center);
@@ -110,6 +119,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.log("EsriLoader: ", error);
     }
+    
     return null;
   }
 

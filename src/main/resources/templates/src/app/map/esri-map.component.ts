@@ -59,11 +59,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   graphicsLayer!: esri.GraphicsLayer;
 
   // Attributes
-  zoom = 10;
-  center: Array<number> = [-118.73682450024377, 34.07817583063242];
+  zoom = 15;
+  center: Array<number> = [26.046562, 44.433811];
   basemap = "streets-vector";
   loaded = false;
-  pointCoords: number[] = [-118.73682450024377, 34.07817583063242];
+  pointCoords: number[] = [26.046562, 44.433811];
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;
@@ -84,7 +84,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       this.map = new WebMap(mapProperties);
 
       this.addFeatureLayers();
-      this.addPoint(this.pointCoords[1], this.pointCoords[0]);
 
       // Initialize the MapView
       const mapViewProperties = {
@@ -96,57 +95,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
       this.view = new MapView(mapViewProperties);
       let obj = this;
-      function findPlaces(pt:any) {
-        const geocodingServiceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
-
-        const params = {
-          address: {
-            address: "Starbucks"
-          },
-          location: pt,  // San Francisco (-122.4194, 37.7749)
-          outFields: ["PlaceName","Place_addr"]
-        }
-
-        Locator.addressToLocations(geocodingServiceUrl, params).then((results)=> {
-          showResults(results);
-        });
-
-      }
-
-      function showResults(results:any) {
-        obj.view.popup.close();
-          obj.view.graphics.removeAll();
-
-          const markerSymbol = new SimpleMarkerSymbol({
-            color: "red",
-            size: "16px",
-            outline: {
-              color: "white",
-              width: "2px",
-            },
-          });
-
-          results.forEach((result:any)=>{
-            obj.view.graphics.add(
-              new Graphic({
-                attributes: result.attributes,
-                geometry: result.location,
-                symbol: markerSymbol,
-                popupTemplate: {
-                  title: "{PlaceName}",
-                  content: "{Place_addr}" + "<br><br>" + result.location.x.toFixed(5) + "," + result.location.y.toFixed(5)
-                }
-             }));
-          });
-          if (results.length) {
-            const g = obj.view.graphics.getItemAt(0);
-            obj.view.openPopup({
-              features: [g],
-              location: g.geometry
-            });
-          }
-      }
-      findPlaces(this.center);
       // Fires `pointer-move` event when user clicks on "Shift"
       // key and moves the pointer on the view.
       this.view.on('pointer-move', ["Shift"], (event) => {

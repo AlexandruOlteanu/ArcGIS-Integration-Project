@@ -1,0 +1,43 @@
+.btn {
+    width: 52%;
+    padding: 14px 20px;
+    margin: 10px 0;
+    color: white;
+    background-color: #3333cc;
+    border: none;
+    border-radius: 25px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+form {
+    position: absolute;
+    left: 25%;
+    top: 15%;
+    transform: translate(-10%, 65%);
+}
+
+input, select {
+    width: 52%;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    box-sizing: border-box;
+}
+
+
+a {
+    color: white;
+    margin-left: 480px;
+    cursor: pointer;
+}
+
+
+#logo {
+    position:absolute;
+    right:0;
+   	bottom: 0;
+	top:0;
+    height: 100%;
+}

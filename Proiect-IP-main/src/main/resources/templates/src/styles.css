@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+html {
+  justify-content: center;
+  /*overflow: hidden;*/
+  padding: 0;
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  background: linear-gradient(to top, #0000ff 0%, #00ffff 100%) no-repeat left fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: 100% 100%;
+}
+.snackbar {
+    opacity: 0;
+}
+

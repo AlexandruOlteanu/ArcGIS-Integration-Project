@@ -1,0 +1,13 @@
+<div>
+<!--    <form [formGroup]="form" (ngSubmit)="submit()">-->
+  <form method="POST" action="http://localhost:8082/login" enctype="multipart/form-data" id="loginForm">
+    <input type="text" id="fname" name="username" placeholder="username" formControlName="username">
+    <input type="password" id="lname" name="password" placeholder="password" formControlName="password">
+
+    <button class="btn">Login</button>
+    <a href="./change_passw1">Schimbă parola</a>
+  </form>
+
+</div>
+
+<img id="logo" src="/assets/poli4.png">

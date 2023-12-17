@@ -1,0 +1,88 @@
+<!-- <div class="button">
+    <button routerLink="/student" type="date_personale">Date personale</button>
+    <button type="catalog" style="position:relative;">Vizualizare Catalog</button>
+    <button type="logout" style="position:relative;">Log Out</button>
+</div> -->
+
+
+<div>
+    <form method="POST" action="http://localhost:8082/logout" enctype="multipart/form-data" id="logoutForm">
+        <div class="topnav">
+            <a class="active" href="./student">Date personale</a>
+            <a class="active" href="./grades">Vizualizare catalog</a>
+            <!-- <a href="#contact">Anunturi</a> -->
+            <a href="./">Log Out</a>
+        </div>
+    </form>
+
+</div>
+
+
+<div style="position:absolute; top: 2%; left: 7%; color:white; font-size: 2.5vmin">
+    <h1>
+        @StudentPlatform
+    </h1>
+    <h3>
+        Platforma catalog online<br>
+         <div>Student {{ name }}</div>
+<!--        <div>Student</div>-->
+    </h3>
+
+    <h2>
+        Sortează:
+        <button class="sort" type="button" (click)="sortGradesAscending()">crescător</button>
+        <button class="sort" type="button" (click)="sortGradesDescending()">descrescător</button>
+    </h2>
+</div>
+
+
+
+<div class="image">
+    <img id="image" src="./assets/poli_student.jpg">
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">Materie</th>
+                <th scope="col">Nota</th>
+                <th scope="col">Flag</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of grades">
+                <td>{{ item.nameMaterie }}</td>
+                <td>{{ item.grade }}</td>
+                <td>
+                    <button id="table_button" type="button" (click)="flagGrade(item.nameMaterie)">
+                        <img id="image_button" src="./assets/Orange-Flag-PNG.png" class="btn btn-success" height="70px" width="20px">
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="avg">
+    Media generală: {{averageGrade}}
+</div>
+
+<div class="cal-modal-container">
+    <h4>Structura anului scolar:</h4>
+    <div class="cal-modal">
+        <h4>UPCOMING EVENTS</h4>
+        <div id="calendar">
+            <div class="placeholder"></div>
+            <div class="calendar-events">
+            </div>
+        </div>
+    </div>
+</div>
+
+<img id="image_stud" src="./assets/student_profile.png">
+
+
+

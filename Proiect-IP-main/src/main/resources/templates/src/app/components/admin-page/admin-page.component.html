@@ -1,0 +1,135 @@
+<!-- <div class="topnav">
+   <a href="#contact">Anunturi</a>
+  <a href="./">Log Out</a>
+</div>  -->
+
+
+<div id="all">
+    <div style="position:absolute; top: 10px; left: 50px; color:white; font-size: 2.8vmin">
+        <h1>
+            @StudentPlatform
+        </h1>
+        <h4>
+            Platforma catalog online
+        </h4>
+    </div>
+
+    <!-- <img id="logo" src="./assets/poli5.png" alt="logo"> -->
+
+
+    <form method="POST" action="http://localhost:8082/logout" enctype="multipart/form-data" id="logoutForm">
+        <div class="container_pic">
+            <img src="./assets/poli5.png">
+            <a href="./">Log Out</a>
+        </div>
+    </form>
+
+
+    <!-- <div>
+      <form method="POST" action="http://localhost:8082/logout" enctype="multipart/form-data" id="logoutForm">
+    <div class="container_pic">
+      <img src="./assets/poli5.png" >
+      <a class="active" href="./student">Date personale</a>
+      <a href="./">Vizualizare catalog</a>
+      <a href="#contact">Anunturi</a>
+      <a href="./">Log Out</a>
+    </div>
+    </form>
+
+    </div> -->
+
+
+    <form id="enrollSubject" [formGroup]="form" (ngSubmit)="enrollSubject()">
+        <div id="username_text_box">
+            <div class="field">
+                Utilizator<span class="mandatory">*</span>
+            </div>
+            <input type="text" name="Utilizator" placeholder="Utilizator" required formControlName="username">
+
+            <div class="field">
+                <div class="fieldname">Rol:<span class="mandatory">*</span></div>
+            </div>
+
+            <select name="strings" formControlName="role">
+                <option value="" disabled selected>-- Alegeți rolul --</option>
+                <option value="student"> Student</option>
+                <option value="professor"> Profesor</option>
+            </select>
+
+            <div class="field">
+                <div class="fieldname">Materie<span class="mandatory">*</span></div>
+            </div>
+
+            <select name="strings" formControlName="subject">
+                <option value="" disabled selected>-- Alegeți o materie --</option>
+                <option *ngFor="let str of strings" [value]="str">{{str}}</option>
+            </select>
+
+            <div style="text-align: center;">
+                <button type="submit" id="button1">Salveaza</button>
+            </div>
+        </div>
+    </form>
+
+
+    <div id="upload">
+        <div class="addfile">
+            <form>
+                <label for="file">Selectați un fișier:</label><br>
+                <input type="file" id="file" name="file" accept=".xlsx" #fileInput><br><br>
+                <button type="submit" (click)="uploadCustomersData(fileInput)" id="button2">Trimite</button>
+            </form>
+        </div>
+        <div id="tooltip">
+            &#9432; Incarcare fisier inrolare studenti si profesori
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Aprobare note
+    </h2>
+
+    <form [formGroup]="formGrades" (ngSubmit)="getGradesByUser()">
+        <label>Nume de familie:</label>
+        <input type="text" value="" name="lastName" placeholder="Popescu" formControlName="lastName"
+               (keypress)="validateNo($event)" maxlength="50">
+
+        <label>Prenume:</label>
+        <input type="text" value="" name="firstName" placeholder="Ion" formControlName="firstName"
+               (keypress)="validateNo($event)" maxlength="50">
+
+        <button type="submit" id="button2">Afișează note neaprobate</button>
+    </form>
+
+    <div class="aprobari_in_curs">
+        <h4>Aprobari in curs:
+        </h4>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col"> Nume elev</th>
+                    <th scope="col">Materie elev</th>
+                    <th scope="col">Nota</th>
+                    <th scope="col">Aprobă</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of grades">
+                    <td>{{ firstName + " " + lastName }}</td>
+                    <td>{{ item.nameMaterie }}</td>
+                    <td>{{ item.grade }}</td>
+                    <td>
+                        <button id="table_button" type="button" (click)="approveGrade(item.nameMaterie)">
+                            <img id="image_button" src="./assets/second_button.png" class="btn btn-success">
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

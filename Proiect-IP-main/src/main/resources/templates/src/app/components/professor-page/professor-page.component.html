@@ -1,0 +1,104 @@
+<div style="position:absolute; top: 2%; left: 4%; color:white; font-size: 2.5vmin">
+    <h1>
+        @StudentPlatform
+    </h1>
+    <h4>
+        Platforma catalog online
+    </h4>
+</div>
+
+<div style="position:absolute; top: 15%; left: 4%; color:white; font-size: 3.5vmin">
+    <h4>
+        Profesor {{name}}
+    </h4>
+</div>
+
+
+<!-- <img id="logo" src="./assets/poli5.png"> -->
+
+<div class="container_pic">
+    <img src="./assets/poli5.png">
+    <a href="./">Log Out</a>
+</div>
+
+
+<div id="student_text_box">
+    <form [formGroup]="form1" (ngSubmit)="addGrade($event.submitter.id)">
+        <div class="field">
+            Nume<span class="mandatory">*</span>
+        </div>
+        <input type="text" placeholder="Popescu" required formControlName="lastName">
+
+        <div class="field">
+            Prenume<span class="mandatory">*</span>
+        </div>
+        <input type="text" placeholder="Ion" required formControlName="firstName">
+
+        <div class="field">
+            Materie<span class="mandatory">*</span>
+        </div>
+
+        <select name="strings" formControlName="materie">
+            <option value="" disabled selected>-- Alegeți o materie --</option>
+            <option *ngFor="let str of subjects" [value]="str">{{str}}</option>
+        </select>
+
+        <div class="field">
+            Nota<span class="mandatory">*</span>
+        </div>
+        <input type="number" min="1" max="10" placeholder="10" required formControlName="grade">
+
+        <button type="submit" id="Buton-salvare-nota">Salveaza nota</button>
+
+        <button type="submit" id="Buton-update-nota">Actualizeaza nota</button>
+    </form>
+</div>
+
+<!--<p id="contact">Contact: <a id="contact" href="url">secretariat [ at ] acs.pub.ro</a></p>-->
+
+<div class="selectBox" (click)=showCheckboxes()>
+    <button id="Buton-lista">Ascunde lista studenti</button>
+</div>
+
+<div class="selectAllBox">
+    <button id="Buton-select-all" (click)="selectAll()">Selecteaza toti studentii</button>
+</div>
+
+<form [formGroup]="form2" (ngSubmit)="addMultipleGrades()">
+    <div style="position:absolute; top: 21%; left: 57%; color:rgb(76, 74, 74); font-size: 2.5vmin">
+        <h2>
+            Notare multipla:
+        </h2>
+    </div>
+
+    <div class="field_form2_nota">
+        Nota:
+    </div>
+
+    <input id="textbox-nota" type="number" min="1" max="10" placeholder="10" required formControlName="grade"><br>
+
+    <div class="field_form2_materie">
+        Materie:
+    </div>
+
+    <select id="textbox-materie" name="strings" formControlName="materie">
+        <option value="" disabled selected>-- Alegeți o materie --</option>
+        <option *ngFor="let str of subjects" [value]="str">{{str}}</option>
+    </select>
+
+    <table id="checkboxes">
+        <thead>
+        <tr>
+            <th scope="col"> Nume student</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of students">
+            <td><input type="checkbox" [value]="item" (change)="updateSelectedStudents($event.target, item)"> {{ item }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <button type="submit" id="Buton-salvare">Salveaza note</button>
+</form>

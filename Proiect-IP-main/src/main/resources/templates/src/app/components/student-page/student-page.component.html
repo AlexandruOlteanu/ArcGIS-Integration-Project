@@ -1,0 +1,86 @@
+<div>
+    <form method="POST" action="http://localhost:8082/logout" enctype="multipart/form-data" id="logoutForm">
+        <div class="topnav">
+            <a class="active" href="./student">Date personale</a>
+            <a class="active" href="./grades">Vizualizare catalog</a>
+            <!-- <a href="#contact">Anunturi</a> -->
+            <a href="./">Log Out</a>
+        </div>
+    </form>
+
+</div>
+
+<div style="position:absolute; top: 2%; left: 7%; color:white; font-size: 2.5vmin">
+    <h1>
+        @StudentPlatform
+    </h1>
+    <h3>
+        Platforma catalog online<br>
+        <div>Student {{ name }}</div>
+    </h3>
+    <h2>
+        Date personale:
+    </h2>
+</div>
+
+<div class="image">
+    <img id="image" src="./assets/poli_student.jpg">
+</div>
+
+<div class="container">
+    <form [formGroup]="form" (ngSubmit)="updateInfo()" id="loginForm">
+        <table>
+            <tr>
+                <td align="right">CNP:</td>
+                <td align="left"><input type="text" name="cnp" (keypress)="validateNo($event)" maxlength="13"
+                                        formControlName="cnp"></td>
+            </tr>
+            <tr>
+                <td align="right">Număr de telefon:</td>
+                <td align="left"><input type="text" name="nr_tlf" (keypress)="validateNo($event)" maxlength="10"
+                                        formControlName="phone"></td>
+            </tr>
+            <tr>
+                <td align="right">Data nașterii:</td>
+                <td align="left"><input type="date" name="birth" maxlength="11" placeholder="DD/MM/YYYY"
+                                        formControlName="birth"></td>
+            </tr>
+            <tr>
+                <td align="right">IBAN:</td>
+                <td align="left"><input type="text" name="iban" maxlength="34" formControlName="iban"></td>
+            </tr>
+            <tr>
+                <td align="right">Studii anterioare:</td>
+                <td align="left"><input type="text" name="studies" formControlName="studies"></td>
+            </tr>
+            <tr>
+                <td align="right">Cămin:</td>
+                <td align="left"><input type="text" name="dorm" formControlName="dorm"></td>
+            </tr>
+            <tr>
+                <td align="right">Cameră</td>
+                <td align="left"><input type="text" name="room" formControlName="room">
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit" id="button1" (click)="updateInfo()">Salveaza</button>
+    </form>
+</div>
+
+<img id="image_stud" src="./assets/student_profile.png">
+
+<div class="cal-modal-container">
+    <h4>Structura anului scolar:</h4>
+    <div class="cal-modal">
+        <h4>UPCOMING EVENTS</h4>
+        <div id="calendar">
+            <div class="placeholder"></div>
+            <div class="calendar-events">
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="explanation">Pentru a încărca modificările, nu uitați să salvați!</p>
+

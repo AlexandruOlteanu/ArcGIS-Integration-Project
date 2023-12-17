@@ -1,0 +1,16 @@
+<div>
+    <!--    <form method="POST" action="http://localhost:8082/user/resetPassword">-->
+    <form [formGroup]="form" (ngSubmit)="reset()">
+        <b> <label for="fname" style="color:white; font-size:18px;" >Introduceți
+            username:</label><br></b>
+        <input type="text" id="fname" name="username" formControlName="username">
+        <b> <label for="fname" style="color:white; font-size:18px;">Introduceți
+            E-Mail:</label><br></b>
+        <input type="email" id="lname" name="email" formControlName="email">
+
+        <button class="btn">Trimite</button>
+    </form>
+
+</div>
+
+<img id="logo" src="/assets/poli4.png">

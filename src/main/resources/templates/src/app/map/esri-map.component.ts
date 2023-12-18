@@ -1,44 +1,20 @@
-/*
-  Copyright 2019 Esri
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
-
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  Input,
-  Output,
-  EventEmitter,
-  OnDestroy
-} from "@angular/core";
-
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from "@angular/core";
 import esri = __esri; // Esri TypeScript Types
-
-
 import Config from '@arcgis/core/config';
 import WebMap from '@arcgis/core/WebMap';
 import MapView from '@arcgis/core/views/MapView';
 import Search from '@arcgis/core/widgets/Search';
-
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 import Graphic from '@arcgis/core/Graphic';
 import Point from '@arcgis/core/geometry/Point';
-
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-
 import FeatureSet from '@arcgis/core/rest/support/FeatureSet';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import RouteParameters from '@arcgis/core/rest/support/RouteParameters';
 import * as route from "@arcgis/core/rest/route.js";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: "app-esri-map",
@@ -46,8 +22,6 @@ import * as route from "@arcgis/core/rest/route.js";
   styleUrls: ["./esri-map.component.scss"]
 })
 export class EsriMapComponent implements OnInit, OnDestroy {
-  @Output() mapLoadedEvent = new EventEmitter<boolean>();
-
   // The <div> where we will place the map
   @ViewChild("mapViewNode", { static: true }) private mapViewEl!: ElementRef;
 
@@ -57,6 +31,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   search!: esri.Search
   pointGraphic!: esri.Graphic;
   graphicsLayer!: esri.GraphicsLayer;
+  weatherData: any; // Property to store weather data
 
   // Attributes
   zoom = 15;
@@ -68,18 +43,16 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   count: number = 0;
   timeoutHandler = null;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   async initializeMap() {
     try {
-
       // Configure the Map
       const mapProperties: esri.WebMapProperties = {
         basemap: this.basemap
       };
 
-      Config.apiKey = "AAPK0943a115fe634f52a29648ce16dead52n9H2aVvlKq2O6aTz5IrKyqNvcBA0B2u9lvySkfA4eGgQHMuIPxrdAYK_osWYKFnm";
-
+      Config.apiKey = "AAPK0943a115fe634f52a29648ce16dead52n9H2aVvlKq2O6aTz5IrKyqNvcBA0B2u9lvySkfA4eGgQHMuIPxrdAYK_osWYKFnm"; // Replace with your ArcGIS API key
 
       this.map = new WebMap(mapProperties);
 
@@ -94,13 +67,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       };
 
       this.view = new MapView(mapViewProperties);
-      let obj = this;
       const search = new Search({
         view: this.view
       });
 
-      // Fires `pointer-move` event when user clicks on "Shift"
-      // key and moves the pointer on the view.
       this.view.on('pointer-move', ["Shift"], (event) => {
         let point = this.view.toMap({ x: event.x, y: event.y });
         console.log("map moved: ", point.longitude, point.latitude);
@@ -110,6 +80,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       this.view.when(() => {
         this.view.ui.add(search, 'top-right');
       });
+
+      // Fetch weather data based on initial map coordinates
+      this.fetchWeatherData(this.center[1], this.center[0]);
+
       console.log("ArcGIS map loaded");
       this.addRouter();
       console.log(this.view.center);
@@ -117,10 +91,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.log("EsriLoader: ", error);
     }
-    
+
     return null;
   }
-
 
   addFeatureLayers() {
     // Trailheads feature layer (points)
@@ -167,7 +140,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         width: 1
       }
     };
-    
+
     this.pointGraphic = new Graphic({
       geometry: point,
       symbol: simpleMarkerSymbol
@@ -256,13 +229,198 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     }
   }
 
+  private weatherPopup!: HTMLDivElement;
+
+  updateWeatherPopup() {
+    if (!this.weatherPopup) {
+      this.weatherPopup = document.createElement('div');
+      this.weatherPopup.classList.add('weather-popup');
+      this.view.ui.add(this.weatherPopup, 'bottom-right');
+    }
+
+    const data = this.weatherData?.data?.[0];
+    if (data) {
+      this.weatherPopup.innerHTML = `
+        <strong>Weather in ${data.city_name}</strong><br>
+        Temperature: ${data.temp}°C<br>
+        Clouds: ${data.clouds}%<br>
+        Humidity: ${data.rh}%<br>
+        Wind Speed: ${data.wind_spd} m/s<br>
+        <small>Last updated: ${data.ob_time}</small>
+      `;
+    }
+  }
+
+  private createWeatherGeoJSON(weatherData: any): __esri.GeoJSONLayer {
+    const feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [weatherData.lon, weatherData.lat]
+      },
+      properties: weatherData
+    };
+  
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [feature]
+    };
+
+    const markerSymbol = new SimpleMarkerSymbol({
+      size: 25,  // Adjust the size as needed
+      color: "green",  // Choose your desired color
+      outline: {
+        width: 0.5,
+        color: "white"
+      }
+    });
+  
+    return new GeoJSONLayer({
+      url: URL.createObjectURL(new Blob([JSON.stringify(geojson)], { type: 'application/json' })),
+      popupTemplate: {
+        title: "Weather in {city_name}",
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "temp",
+                label: "Temperature (°C)",
+                format: {
+                  digitSeparator: true,
+                  places: 1
+                }
+              },
+              {
+                fieldName: "app_temp",
+                label: "Apparent Temperature (°C)",
+                format: {
+                  digitSeparator: true,
+                  places: 1
+                }
+              },
+              {
+                fieldName: "aqi",
+                label: "Air Quality Index",
+                format: {
+                  digitSeparator: true,
+                  places: 0
+                }
+              },
+              {
+                fieldName: "clouds",
+                label: "Clouds (%)",
+                format: {
+                  digitSeparator: true,
+                  places: 0
+                }
+              },
+              {
+                fieldName: "dewpt",
+                label: "Dew Point (°C)",
+                format: {
+                  digitSeparator: true,
+                  places: 1
+                }
+              },
+              {
+                fieldName: "wind_spd",
+                label: "Wind Speed (m/s)",
+                format: {
+                  digitSeparator: true,
+                  places: 1
+                }
+              },
+              {
+                fieldName: "wind_cdir_full",
+                label: "Wind Direction",
+              },
+              {
+                fieldName: "rh",
+                label: "Relative Humidity (%)",
+                format: {
+                  digitSeparator: true,
+                  places: 0
+                }
+              },
+              {
+                fieldName: "pres",
+                label: "Pressure (mb)",
+                format: {
+                  digitSeparator: true,
+                  places: 1
+                }
+              },
+              {
+                fieldName: "uv",
+                label: "UV Index",
+                format: {
+                  digitSeparator: true,
+                  places: 2
+                }
+              },
+              {
+                fieldName: "vis",
+                label: "Visibility (KM)",
+                format: {
+                  digitSeparator: true,
+                  places: 1
+                }
+              },
+              {
+                fieldName: "weather.description",
+                label: "Weather Description",
+              },
+              {
+                fieldName: "ob_time",
+                label: "Observation Time",
+              }
+            ]
+          }
+        ]
+      },
+      labelingInfo: [{
+        symbol: {
+          type: "text",  // autocasts as new TextSymbol()
+          color: "green",
+          haloColor: "white",
+          haloSize: "1px",
+          text: "Click to open weather data",
+          font: {
+            size: 14,
+            family: "sans-serif"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "'See weather data in Politehnica Campus'" // Static text
+        }
+      }],
+      renderer: new SimpleRenderer({
+        symbol: markerSymbol
+      })
+      
+    });
+  }
+  
+
+  // Fetch weather data based on latitude and longitude
+  fetchWeatherData(lat: number, lon: number) {
+    const apiKey = "1f8a81e126394525b0160c29e3fef32f"; // Replace with your OpenWeatherMap API key
+    const weatherApiUrl = `https://api.weatherbit.io/v2.0/current?lat=${lat}&lon=${lon}&key=${apiKey}`;
+
+    this.http.get(weatherApiUrl).subscribe((data: any) => {
+      const weatherLayer = this.createWeatherGeoJSON(data.data[0]);
+      this.map.add(weatherLayer);
+    });
+  }
+
   ngOnInit() {
     // Initialize MapView and return an instance of MapView
     this.initializeMap().then(() => {
       // The map has been initialized
       console.log("mapView ready: ", this.view.ready);
       this.loaded = this.view.ready;
-      this.mapLoadedEvent.emit(true);
     });
   }
 

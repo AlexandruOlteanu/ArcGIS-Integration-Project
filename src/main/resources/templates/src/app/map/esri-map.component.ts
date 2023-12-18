@@ -229,28 +229,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private weatherPopup!: HTMLDivElement;
-
-  updateWeatherPopup() {
-    if (!this.weatherPopup) {
-      this.weatherPopup = document.createElement('div');
-      this.weatherPopup.classList.add('weather-popup');
-      this.view.ui.add(this.weatherPopup, 'bottom-right');
-    }
-
-    const data = this.weatherData?.data?.[0];
-    if (data) {
-      this.weatherPopup.innerHTML = `
-        <strong>Weather in ${data.city_name}</strong><br>
-        Temperature: ${data.temp}°C<br>
-        Clouds: ${data.clouds}%<br>
-        Humidity: ${data.rh}%<br>
-        Wind Speed: ${data.wind_spd} m/s<br>
-        <small>Last updated: ${data.ob_time}</small>
-      `;
-    }
-  }
-
   private createWeatherGeoJSON(weatherData: any): __esri.GeoJSONLayer {
     const feature = {
       type: 'Feature',

@@ -29,8 +29,6 @@ import Config from '@arcgis/core/config';
 import WebMap from '@arcgis/core/WebMap';
 import MapView from '@arcgis/core/views/MapView';
 import Search from '@arcgis/core/widgets/Search';
-import * as Locator from '@arcgis/core/rest/locator';
-import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Graphic from '@arcgis/core/Graphic';
@@ -62,10 +60,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   // Attributes
   zoom = 15;
-  center: Array<number> = [26.046562, 44.433811];
+  center: Array<number> = [26.046562, 44.4379811];
   basemap = "streets-vector";
   loaded = false;
-  pointCoords: number[] = [26.046562, 44.433811];
+  pointCoords: number[] = [26.046562, 44.437911];
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;

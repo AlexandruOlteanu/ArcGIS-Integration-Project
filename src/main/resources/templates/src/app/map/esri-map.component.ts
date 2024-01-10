@@ -384,7 +384,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   // Fetch weather data based on latitude and longitude
   fetchWeatherData(lat: number, lon: number) {
-    const apiKey = "1f8a81e126394525b0160c29e3fef32f"; // Replace with your OpenWeatherMap API key
+    const apiKey = "811a9aa4923d4e12b04a8c472fa54a72"; // Replace with your OpenWeatherMap API key
     const weatherApiUrl = `https://api.weatherbit.io/v2.0/current?lat=${lat}&lon=${lon}&key=${apiKey}`;
 
     this.http.get(weatherApiUrl).subscribe((data: any) => {
